@@ -3,7 +3,6 @@ export type CallbackID = string;
 export interface DownloadOptions {
   url: string;
   localPath: string;
-  fileName: string;
 }
 
 export interface DownloadProgressResult {

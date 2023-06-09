@@ -19,10 +19,6 @@ public class DownloaderPlugin: CAPPlugin {
             call.reject("No save localPath")
             return
         }
-        guard let fileName = call.getString("fileName") else {
-            call.reject("No save fileName")
-            return
-        }
         guard let callbackId = call.callbackId else {
             call.reject("No callbackId")
             return
@@ -30,7 +26,7 @@ public class DownloaderPlugin: CAPPlugin {
         
         let destination: DownloadRequest.Destination = { _, _ in
             let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let fileURL = documentsURL.appendingPathComponent(localPath).appendingPathComponent(fileName)
+            let fileURL = documentsURL.appendingPathComponent(localPath)
 
             return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
         }
