@@ -10,23 +10,23 @@ export class Downloader extends WebPlugin implements DownloaderPlugin {
     const contentLength = +(response.headers.get('Content-Length') || 0);
     let receivedLength = 0;
     const chunks = [];
-    while(true) {
-        const result = await reader?.read();
-        if(!result || result.done) {
-            break;
-        }
-        chunks.push(result.value);
-        receivedLength += result.value.length;
-        callback({
-          progress: receivedLength / contentLength
-        });
+    while (true) {
+      const result = await reader?.read();
+      if (!result || result.done) {
+        break;
+      }
+      chunks.push(result.value);
+      receivedLength += result.value.length;
+      callback({
+        progress: receivedLength / contentLength
+      });
     }
 
     const chunksAll = new Uint8Array(receivedLength);
     let position = 0;
-    for(const chunk of chunks) {
-        chunksAll.set(chunk, position);
-        position += chunk.length;
+    for (const chunk of chunks) {
+      chunksAll.set(chunk, position);
+      position += chunk.length;
     }
 
     // TODO: 
