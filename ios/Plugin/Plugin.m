@@ -5,4 +5,5 @@
 // each method the plugin supports using the CAP_PLUGIN_METHOD macro.
 CAP_PLUGIN(DownloaderPlugin, "DownloaderPlugin",
            CAP_PLUGIN_METHOD(download, CAPPluginReturnCallback);
+           CAP_PLUGIN_METHOD(absolutePath, CAPPluginReturnPromise);
 )

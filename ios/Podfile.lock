@@ -3,15 +3,18 @@ PODS:
   - Capacitor (5.0.4):
     - CapacitorCordova
   - CapacitorCordova (5.0.4)
+  - SSZipArchive (2.5.4)
 
 DEPENDENCIES:
   - Alamofire
   - "Capacitor (from `../node_modules/@capacitor/ios`)"
   - "CapacitorCordova (from `../node_modules/@capacitor/ios`)"
+  - SSZipArchive
 
 SPEC REPOS:
   trunk:
     - Alamofire
+    - SSZipArchive
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -23,7 +26,8 @@ SPEC CHECKSUMS:
   Alamofire: 0123a34370cb170936ae79a8df46cc62b2edeb88
   Capacitor: d3d4463573438b9fa65326d1f3549da6f4c21634
   CapacitorCordova: b1fe6bf1f36974a8e4a9044b342d22d49c0996d6
+  SSZipArchive: 285b618a158ebc421039c22db5b77d345c7c03db
 
-PODFILE CHECKSUM: 55223580a256cef439d27fb996ff21f11f3fc74e
+PODFILE CHECKSUM: 5d677880aa48c691414c2d4ed925ce5c5be4d9f3
 
 COCOAPODS: 1.12.1

@@ -1,6 +1,6 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { DownloadOptions, DownloadProgressCallback, DownloaderPlugin } from './definitions';
+import type { DownloadOptions, DownloadProgressCallback, DownloaderPlugin, PathOptions } from './definitions';
 
 export class Downloader extends WebPlugin implements DownloaderPlugin {
   async download(options: DownloadOptions, callback: DownloadProgressCallback): Promise<string> {
@@ -33,5 +33,8 @@ export class Downloader extends WebPlugin implements DownloaderPlugin {
     // const blob = convertUint8ArrayToBlob(chunksAll);
 
     return '';
+  }
+  async absolutePath(options: PathOptions): Promise<string> {
+    return options.localPath;
   }
 }
