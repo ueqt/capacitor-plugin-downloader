@@ -13,9 +13,13 @@ export interface PathOptions {
   localPath: string;
 }
 
+export interface AbsolutePathResult {
+  absolutePath: string;
+}
+
 export type DownloadProgressCallback = (downloadProgressResult: DownloadProgressResult) => void;
 
 export interface DownloaderPlugin {
   download(options: DownloadOptions, callback: DownloadProgressCallback): Promise<CallbackID>;
-  absolutePath(options: PathOptions): Promise<string>;
+  absolutePath(options: PathOptions): Promise<AbsolutePathResult>;
 }
