@@ -40,16 +40,11 @@ public class DownloaderPlugin: CAPPlugin {
                 }
             }
             .responseData { response in
-                print("finish download")
                 if response.error == nil {
                     // unzip
-                    print("no error")
                     let _ = self.unzip(fileURL)
-                    print("finish unzip")
-                    print(fileURL.absoluteString)
                     call.resolve()
                 } else {
-                    print("error")
                     call.reject(response.error?.errorDescription ?? "")
                 }
             }
@@ -71,20 +66,17 @@ public class DownloaderPlugin: CAPPlugin {
     private func unzip(_ fileURL: URL) -> String {
         print(fileURL.pathExtension)
         if fileURL.pathExtension == "zip" {
-            print("zip")
+            print(fileURL.absoluteString)
+            print((fileURL.absoluteString as NSString).deletingPathExtension)
             SSZipArchive.unzipFile(atPath: fileURL.absoluteString, toDestination: (fileURL.absoluteString as NSString).deletingPathExtension)
-            print("success unzip")
             // delete file
-            do {
-                print("start delete")
-                try FileManager.default.removeItem(at: fileURL)
-                print("finish delete")
-            } catch {
-                print("Could not delete file, probably read-only filesystem")
-            }
+//            do {
+//                try FileManager.default.removeItem(at: fileURL)
+//            } catch {
+//                print("Could not delete file, probably read-only filesystem")
+//            }
             return (fileURL.absoluteString as NSString).deletingPathExtension.appending("/index.html")
         }
-        print("not zip")
         return fileURL.absoluteString
     }
 }
