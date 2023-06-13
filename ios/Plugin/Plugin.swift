@@ -67,9 +67,9 @@ public class DownloaderPlugin: CAPPlugin {
         print(fileURL.pathExtension)
         if fileURL.pathExtension == "zip" {
             print("=========================================")
-            print(fileURL.absoluteString)
-            print((fileURL.absoluteString as NSString).deletingPathExtension)
-            print(SSZipArchive.unzipFile(atPath: fileURL.absoluteString, toDestination: (fileURL.absoluteString as NSString).deletingPathExtension) { a, b, c, d in
+            print(fileURL.relativePath)
+            print((fileURL.relativePath as NSString).deletingPathExtension)
+            print(SSZipArchive.unzipFile(atPath: fileURL.relativePath, toDestination: (fileURL.relativePath as NSString).deletingPathExtension) { a, b, c, d in
                 print(a)
                 print(b)
                 print(c)
