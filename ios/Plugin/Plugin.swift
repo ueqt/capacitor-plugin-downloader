@@ -46,7 +46,7 @@ public class DownloaderPlugin: CAPPlugin {
                     print("no error")
                     let _ = self.unzip(fileURL)
                     print("finish unzip")
-                    print(fileURL.absolutePath)
+                    print(fileURL.absoluteString)
                     call.resolve()
                 } else {
                     print("error")
