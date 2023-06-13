@@ -42,7 +42,7 @@ public class DownloaderPlugin: CAPPlugin {
             .responseData { response in
                 if response.error == nil {
                     // unzip
-                    let _ = self.unzip(fileURL)
+                    self.unzip(fileURL)
                     call.resolve()
                 } else {
                     call.reject(response.error?.errorDescription ?? "")
@@ -63,20 +63,26 @@ public class DownloaderPlugin: CAPPlugin {
         ])
     }
     
-    private func unzip(_ fileURL: URL) -> String {
+    private func unzip(_ fileURL: URL) {
         print(fileURL.pathExtension)
         if fileURL.pathExtension == "zip" {
+            print("=========================================")
             print(fileURL.absoluteString)
             print((fileURL.absoluteString as NSString).deletingPathExtension)
-            SSZipArchive.unzipFile(atPath: fileURL.absoluteString, toDestination: (fileURL.absoluteString as NSString).deletingPathExtension)
+            print(SSZipArchive.unzipFile(atPath: fileURL.absoluteString, toDestination: (fileURL.absoluteString as NSString).deletingPathExtension) { a, b, c, d in
+                print(a)
+                print(b)
+                print(c)
+                print(d)
+            })
+            print("=========================================")
             // delete file
-//            do {
-//                try FileManager.default.removeItem(at: fileURL)
-//            } catch {
-//                print("Could not delete file, probably read-only filesystem")
-//            }
-            return (fileURL.absoluteString as NSString).deletingPathExtension.appending("/index.html")
+            do {
+                try FileManager.default.removeItem(at: fileURL)
+            } catch {
+                print("Could not delete file, probably read-only filesystem")
+            }
+            return
         }
-        return fileURL.absoluteString
     }
 }
