@@ -51,14 +51,18 @@ public class DownloaderPlugin: CAPPlugin {
     }
     
     @objc func absolutePath(_ call: CAPPluginCall) -> String {
+        print("in absolutePath")
         guard let localPath = call.getString("localPath") else {
             call.reject("No read localPath")
             return ""
         }
+        print(localPath)
         
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        print("documentsURL")
         let fileURL = documentsURL.appendingPathComponent(localPath)
-        return self.unzip(fileURL)
+        print("fileURL")
+        return fileURL.absoluteString
     }
     
     private func unzip(_ fileURL: URL) -> String {
