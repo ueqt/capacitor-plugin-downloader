@@ -82,7 +82,6 @@ public class DownloaderPlugin: CAPPlugin {
             } catch {
                 print("Could not delete file, probably read-only filesystem")
             }
-            return
         }
     }
 }
