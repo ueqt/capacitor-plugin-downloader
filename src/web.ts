@@ -40,8 +40,8 @@ export class Downloader extends WebPlugin implements DownloaderPlugin {
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async unzip(options: UnzipOptions, callback: DownloadProgressCallback): Promise<void> {
-    // TODO
+    console.log(options);
+    console.log(callback);
   }
 }
