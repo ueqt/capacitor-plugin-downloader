@@ -48,7 +48,7 @@ public class DownloaderPlugin: CAPPlugin {
             .downloadProgress { progress in
                 if let savedCall = self.bridge?.savedCall(withID: callbackId) {
                     return savedCall.resolve([
-                        "progress": progress.fractionCompleted * 0.8 // download 80%
+                        "progress": progress.fractionCompleted //* 0.8 // download 80%
                     ])
                 }
             }
@@ -99,11 +99,11 @@ public class DownloaderPlugin: CAPPlugin {
             print(fileURL.relativePath)
             print((fileURL.relativePath as NSString).deletingPathExtension)
             print(SSZipArchive.unzipFile(atPath: fileURL.relativePath, toDestination: (fileURL.relativePath as NSString).deletingPathExtension) { entry, zipInfo, entryNumber, total in
-                if let savedCall = self.bridge?.savedCall(withID: callbackId) {
-                    return savedCall.resolve([
-                        "progress": 0.8 + 0.2 * Double(entryNumber) / Double(total)
-                    ])
-                }
+//                if let savedCall = self.bridge?.savedCall(withID: callbackId) {
+//                    return savedCall.resolve([
+//                        "progress": 0.8 + 0.2 * Double(entryNumber) / Double(total)
+//                    ])
+//                }
             })
             print("=========================================")
             // delete file
@@ -113,11 +113,11 @@ public class DownloaderPlugin: CAPPlugin {
                 print("Could not delete file, probably read-only filesystem")
             }
         } else {
-            if let savedCall = self.bridge?.savedCall(withID: callbackId) {
-                return savedCall.resolve([
-                    "progress": 1
-                ])
-            }
+//            if let savedCall = self.bridge?.savedCall(withID: callbackId) {
+//                return savedCall.resolve([
+//                    "progress": 1
+//                ])
+//            }
         }
     }
     
