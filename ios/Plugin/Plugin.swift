@@ -3,6 +3,16 @@ import Capacitor
 import Alamofire
 import SSZipArchive
 
+extension Dictionary where Key == String, Value == String {
+    func toHeader() -> HTTPHeaders {
+        var headers: HTTPHeaders = [:]
+        for (key, value) in self  {
+            headers.add(name: key, value: value)
+        }
+        return headers
+    }
+}
+
 /**
  * Please read the Capacitor iOS Plugin Development Guide
  * here: https://capacitorjs.com/docs/plugins/ios
@@ -24,6 +34,7 @@ public class DownloaderPlugin: CAPPlugin {
             call.reject("No callbackId")
             return
         }
+        let headersString = call.getString("headers") ?? ""
         
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileURL = documentsURL.appendingPathComponent(localPath)
@@ -31,18 +42,20 @@ public class DownloaderPlugin: CAPPlugin {
             return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
         }
         
-        AF.download(url, to: destination)
+        var headers = self.convertStringToDictionary(text: headersString) ?? [:]
+        
+        AF.download(url, headers: headers.toHeader(), to: destination)
             .downloadProgress { progress in
                 if let savedCall = self.bridge?.savedCall(withID: callbackId) {
                     return savedCall.resolve([
-                        "progress": progress.fractionCompleted
+                        "progress": progress.fractionCompleted * 0.8 // download 80%
                     ])
                 }
             }
             .responseData { response in
                 if response.error == nil {
                     // unzip
-                    self.unzip(fileURL)
+                    self.doUnzip(fileURL, callbackId: callbackId)
                     call.resolve()
                 } else {
                     call.reject(response.error?.errorDescription ?? "")
@@ -63,17 +76,34 @@ public class DownloaderPlugin: CAPPlugin {
         ])
     }
     
-    private func unzip(_ fileURL: URL) {
+    @objc func unzip(_ call: CAPPluginCall) {
+        call.keepAlive = true
+        guard let zipRelativePath = call.getString("zipRelativePath") else {
+            call.reject("No read zipRelativePath")
+            return
+        }
+        guard let callbackId = call.callbackId else {
+            call.reject("No callbackId")
+            return
+        }
+        
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let fileURL = documentsURL.appendingPathComponent(zipRelativePath)
+        self.doUnzip(fileURL, callbackId: callbackId)
+    }
+    
+    private func doUnzip(_ fileURL: URL, callbackId: String) {
         print(fileURL.pathExtension)
         if fileURL.pathExtension == "zip" {
             print("=========================================")
             print(fileURL.relativePath)
             print((fileURL.relativePath as NSString).deletingPathExtension)
-            print(SSZipArchive.unzipFile(atPath: fileURL.relativePath, toDestination: (fileURL.relativePath as NSString).deletingPathExtension) { a, b, c, d in
-                print(a)
-                print(b)
-                print(c)
-                print(d)
+            print(SSZipArchive.unzipFile(atPath: fileURL.relativePath, toDestination: (fileURL.relativePath as NSString).deletingPathExtension) { entry, zipInfo, entryNumber, total in
+                if let savedCall = self.bridge?.savedCall(withID: callbackId) {
+                    return savedCall.resolve([
+                        "progress": 0.8 + 0.2 * Double(entryNumber) / Double(total)
+                    ])
+                }
             })
             print("=========================================")
             // delete file
@@ -82,6 +112,24 @@ public class DownloaderPlugin: CAPPlugin {
             } catch {
                 print("Could not delete file, probably read-only filesystem")
             }
+        } else {
+            if let savedCall = self.bridge?.savedCall(withID: callbackId) {
+                return savedCall.resolve([
+                    "progress": 1
+                ])
+            }
         }
     }
+    
+    private func convertStringToDictionary(text: String) -> [String:String]? {
+       if let data = text.data(using: .utf8) {
+           do {
+               let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String:String]
+               return json
+           } catch {
+               print("Something went wrong")
+           }
+       }
+       return nil
+   }
 }

@@ -6,4 +6,5 @@
 CAP_PLUGIN(DownloaderPlugin, "DownloaderPlugin",
            CAP_PLUGIN_METHOD(download, CAPPluginReturnCallback);
            CAP_PLUGIN_METHOD(absolutePath, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(unzip, CAPPluginReturnCallback);
 )
