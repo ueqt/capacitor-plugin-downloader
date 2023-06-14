@@ -55,7 +55,32 @@ public class DownloaderPlugin: CAPPlugin {
             .responseData { response in
                 if response.error == nil {
                     // unzip
-                    self.doUnzip(fileURL, callbackId: callbackId)
+                    print(fileURL.pathExtension)
+                    if fileURL.pathExtension == "zip" {
+                        print("=========================================")
+                        print(fileURL.relativePath)
+                        print((fileURL.relativePath as NSString).deletingPathExtension)
+                        print(SSZipArchive.unzipFile(atPath: fileURL.relativePath, toDestination: (fileURL.relativePath as NSString).deletingPathExtension) { entry, zipInfo, entryNumber, total in
+                            if let savedCall = self.bridge?.savedCall(withID: callbackId) {
+                                return savedCall.resolve([
+                                    "progress": 0.8 + 0.2 * Double(entryNumber) / Double(total)
+                                ])
+                            }
+                        })
+                        print("=========================================")
+                        // delete file
+                        do {
+                            try FileManager.default.removeItem(at: fileURL)
+                        } catch {
+                            print("Could not delete file, probably read-only filesystem")
+                        }
+                    } else {
+                        if let savedCall = self.bridge?.savedCall(withID: callbackId) {
+                            return savedCall.resolve([
+                                "progress": 1
+                            ])
+                        }
+                    }
                     call.resolve()
                 } else {
                     call.reject(response.error?.errorDescription ?? "")
@@ -99,6 +124,10 @@ public class DownloaderPlugin: CAPPlugin {
             print(fileURL.relativePath)
             print((fileURL.relativePath as NSString).deletingPathExtension)
             print(SSZipArchive.unzipFile(atPath: fileURL.relativePath, toDestination: (fileURL.relativePath as NSString).deletingPathExtension) { entry, zipInfo, entryNumber, total in
+                print(entry)
+                print(zipInfo)
+                print(entryNumber)
+                print(total)
 //                if let savedCall = self.bridge?.savedCall(withID: callbackId) {
 //                    return savedCall.resolve([
 //                        "progress": 0.8 + 0.2 * Double(entryNumber) / Double(total)
