@@ -60,9 +60,13 @@ public class DownloaderPlugin: CAPPlugin {
         
         AF.download(url, headers: headers.toHeader(), to: destination)
             .downloadProgress { progress in
-//                return savedCall.resolve([
-//                    "progress": progress.fractionCompleted * 0.8 // download 80%
-//                ])
+                guard let savedCall = bridge.savedCall(withID: callbackId) else {
+                    print("no savedcall")
+                    return
+                }
+                return savedCall.resolve([
+                    "progress": progress.fractionCompleted * 0.8 // download 80%
+                ])
             }
             .responseData { response in
                 if response.error == nil {
@@ -92,6 +96,7 @@ public class DownloaderPlugin: CAPPlugin {
 //                    return savedCall.resolve([
 //                        "progress": 1
 //                    ])
+                    call.resolve()
                 } else {
                     call.reject(response.error?.errorDescription ?? "")
                 }
