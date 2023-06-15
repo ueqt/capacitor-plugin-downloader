@@ -61,9 +61,10 @@ public class DownloaderPlugin: CAPPlugin {
         AF.download(url, headers: headers.toHeader(), to: destination)
             .downloadProgress { progress in
                 guard let savedCall = bridge.savedCall(withID: callbackId) else {
-                    print("no savedcall")
+                    print("no savedcall1")
                     return
                 }
+                print("download progress")
                 return savedCall.resolve([
                     "progress": progress.fractionCompleted * 0.8 // download 80%
                 ])
@@ -81,9 +82,13 @@ public class DownloaderPlugin: CAPPlugin {
                             print(zipInfo)
                             print(entryNumber)
                             print(total)
-//                            return savedCall.resolve([
-//                                "progress": 0.8 + 0.2 * Double(entryNumber) / Double(total)
-//                            ])
+                            guard let savedCall = bridge.savedCall(withID: callbackId) else {
+                                print("no savedcall2")
+                                return
+                            }
+                            return savedCall.resolve([
+                                "progress": 0.8 + 0.2 * Double(entryNumber) / Double(total)
+                            ])
                         }))
                         print("=========================================")
                         // delete file
@@ -93,10 +98,14 @@ public class DownloaderPlugin: CAPPlugin {
                             print("Could not delete file, probably read-only filesystem")
                         }
                     }
-//                    return savedCall.resolve([
-//                        "progress": 1
-//                    ])
-                    call.resolve()
+                    guard let savedCall = bridge.savedCall(withID: callbackId) else {
+                        print("no savedcall3")
+                        return
+                    }
+                    print("complete progress")
+                    return savedCall.resolve([
+                        "progress": 1
+                    ])
                 } else {
                     call.reject(response.error?.errorDescription ?? "")
                 }
