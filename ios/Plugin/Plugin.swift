@@ -42,6 +42,8 @@ public class DownloaderPlugin: CAPPlugin {
             call.reject("No bridge")
             return
         }
+        
+        print("1")
 
 //        guard let savedCall = bridge.savedCall(withID: callbackId) else {
 //            print("no savedcall")
@@ -49,15 +51,18 @@ public class DownloaderPlugin: CAPPlugin {
 //        }
         
         let headersString = call.getString("headers") ?? ""
-        
+        print("2")
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        print("3")
         let fileURL = documentsURL.appendingPathComponent(localPath)
+        print("4")
         let destination: DownloadRequest.Destination = { _, _ in
             return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
         }
+        print("5")
         
         var headers = self.convertStringToDictionary(text: headersString) ?? [:]
-        
+        print("6")
         AF.download(url, headers: headers.toHeader(), to: destination)
             .downloadProgress { progress in
                 guard let savedCall = bridge.savedCall(withID: callbackId) else {
@@ -110,6 +115,7 @@ public class DownloaderPlugin: CAPPlugin {
                     call.reject(response.error?.errorDescription ?? "")
                 }
             }
+        print("7")
     }
     
     @objc func absolutePath(_ call: CAPPluginCall) {
@@ -127,6 +133,7 @@ public class DownloaderPlugin: CAPPlugin {
     
     @objc func unzip(_ call: CAPPluginCall) {
         call.keepAlive = true
+        
         guard let zipRelativePath = call.getString("zipRelativePath") else {
             call.reject("No read zipRelativePath")
             return
@@ -140,11 +147,6 @@ public class DownloaderPlugin: CAPPlugin {
         
         guard let bridge = self.bridge else {
             call.reject("No bridge")
-            return
-        }
-
-        guard let savedCall = bridge.savedCall(withID: callbackId) else {
-            print("no savedcall")
             return
         }
         
@@ -161,6 +163,10 @@ public class DownloaderPlugin: CAPPlugin {
                 print(zipInfo)
                 print(entryNumber)
                 print(total)
+                guard let savedCall = bridge.savedCall(withID: callbackId) else {
+                    print("no savedcall1")
+                    return
+                }
                 print("do progress")
                 return savedCall.resolve([
                     "progress": Double(entryNumber) / Double(total)
@@ -174,6 +180,10 @@ public class DownloaderPlugin: CAPPlugin {
             } catch {
                 print("Could not delete file, probably read-only filesystem")
             }
+        }
+        guard let savedCall = bridge.savedCall(withID: callbackId) else {
+            print("no savedcall2")
+            return
         }
         return savedCall.resolve([
             "progress": 1
