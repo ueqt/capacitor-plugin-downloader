@@ -34,6 +34,20 @@ public class DownloaderPlugin: CAPPlugin {
             call.reject("No callbackId")
             return
         }
+        
+        print("callbackId: ")
+        print(callbackId)
+        
+        guard let bridge = self.bridge else {
+            call.reject("No bridge")
+            return
+        }
+
+        guard let savedCall = bridge.savedCall(withID: callbackId) else {
+            print("no savedcall")
+            return
+        }
+        
         let headersString = call.getString("headers") ?? ""
         
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
@@ -46,11 +60,9 @@ public class DownloaderPlugin: CAPPlugin {
         
         AF.download(url, headers: headers.toHeader(), to: destination)
             .downloadProgress { progress in
-                if let savedCall = self.bridge?.savedCall(withID: callbackId) {
-                    return savedCall.resolve([
-                        "progress": progress.fractionCompleted * 0.8 // download 80%
-                    ])
-                }
+                return savedCall.resolve([
+                    "progress": progress.fractionCompleted * 0.8 // download 80%
+                ])
             }
             .responseData { response in
                 if response.error == nil {
@@ -65,18 +77,10 @@ public class DownloaderPlugin: CAPPlugin {
                             print(zipInfo)
                             print(entryNumber)
                             print(total)
-                            if let savedCall = self.bridge?.savedCall(withID: callbackId) {
-                                print("do progress")
-                                return savedCall.resolve([
-                                    "progress": 0.8 + 0.2 * Double(entryNumber) / Double(total)
-                                ])
-                            }
-                        }))
-                        if let savedCall = self.bridge?.savedCall(withID: callbackId) {
                             return savedCall.resolve([
-                                "progress": 1
+                                "progress": 0.8 + 0.2 * Double(entryNumber) / Double(total)
                             ])
-                        }
+                        }))
                         print("=========================================")
                         // delete file
                         do {
@@ -84,14 +88,10 @@ public class DownloaderPlugin: CAPPlugin {
                         } catch {
                             print("Could not delete file, probably read-only filesystem")
                         }
-                    } else {
-                        if let savedCall = self.bridge?.savedCall(withID: callbackId) {
-                            return savedCall.resolve([
-                                "progress": 1
-                            ])
-                        }
                     }
-                    call.resolve()
+                    return savedCall.resolve([
+                        "progress": 1
+                    ])
                 } else {
                     call.reject(response.error?.errorDescription ?? "")
                 }
