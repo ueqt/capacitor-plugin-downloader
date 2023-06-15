@@ -102,7 +102,6 @@ public class DownloaderPlugin: CAPPlugin {
     }
     
     @objc func unzip(_ call: CAPPluginCall) {
-        print("aaaa");
         call.keepAlive = true
         guard let zipRelativePath = call.getString("zipRelativePath") else {
             call.reject("No read zipRelativePath")
@@ -112,7 +111,6 @@ public class DownloaderPlugin: CAPPlugin {
             call.reject("No callbackId")
             return
         }
-        print("bbbb");
         
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileURL = documentsURL.appendingPathComponent(zipRelativePath)
