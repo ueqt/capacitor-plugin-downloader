@@ -18,14 +18,20 @@ export interface AbsolutePathResult {
   absolutePath: string;
 }
 
+export type DownloadProgressCallback = (downloadProgressResult: DownloadProgressResult) => void;
+
 export interface UnzipOptions {
   zipRelativePath: string;
 }
 
-export type DownloadProgressCallback = (downloadProgressResult: DownloadProgressResult) => void;
+export interface UnzipProgressResult {
+  progress: number;
+}
+
+export type UnzipProgressCallback = (unzipProgressResult: UnzipProgressResult) => void;
 
 export interface DownloaderPlugin {
   download(options: DownloadOptions, callback: DownloadProgressCallback): Promise<CallbackID>;
   absolutePath(options: PathOptions): Promise<AbsolutePathResult>;
-  unzip(options: UnzipOptions, callback: DownloadProgressCallback): Promise<CallbackID>;
+  unzip(options: UnzipOptions, callback: UnzipProgressCallback): Promise<CallbackID>;
 }

@@ -1,6 +1,6 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { AbsolutePathResult, DownloadOptions, DownloadProgressCallback, DownloaderPlugin, PathOptions, UnzipOptions } from './definitions';
+import type { AbsolutePathResult, DownloadOptions, DownloadProgressCallback, DownloaderPlugin, PathOptions, UnzipOptions, UnzipProgressCallback } from './definitions';
 
 export class Downloader extends WebPlugin implements DownloaderPlugin {
   async download(options: DownloadOptions, callback: DownloadProgressCallback): Promise<string> {
@@ -40,7 +40,7 @@ export class Downloader extends WebPlugin implements DownloaderPlugin {
     };
   }
 
-  async unzip(options: UnzipOptions, callback: DownloadProgressCallback): Promise<string> {
+  async unzip(options: UnzipOptions, callback: UnzipProgressCallback): Promise<string> {
     console.log(options);
     console.log(callback);
     return '';
