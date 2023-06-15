@@ -42,34 +42,27 @@ public class DownloaderPlugin: CAPPlugin {
             call.reject("No bridge")
             return
         }
-        
-        print("1")
 
 //        guard let savedCall = bridge.savedCall(withID: callbackId) else {
 //            print("no savedcall")
 //            return
 //        }
         
-        let headersString = call.getString("headers") ?? ""
-        print("2")
+        let headersString = call.getString("headers") ?? "{}"
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        print("3")
         let fileURL = documentsURL.appendingPathComponent(localPath)
-        print("4")
         let destination: DownloadRequest.Destination = { _, _ in
             return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
         }
-        print("5")
         
         var headers = self.convertStringToDictionary(text: headersString) ?? [:]
-        print("6")
+        
         AF.download(url, headers: headers.toHeader(), to: destination)
             .downloadProgress { progress in
                 guard let savedCall = bridge.savedCall(withID: callbackId) else {
                     print("no savedcall1")
                     return
                 }
-                print("download progress")
                 return savedCall.resolve([
                     "progress": progress.fractionCompleted * 0.8 // download 80%
                 ])
@@ -115,7 +108,6 @@ public class DownloaderPlugin: CAPPlugin {
                     call.reject(response.error?.errorDescription ?? "")
                 }
             }
-        print("7")
     }
     
     @objc func absolutePath(_ call: CAPPluginCall) {
@@ -149,6 +141,8 @@ public class DownloaderPlugin: CAPPlugin {
             call.reject("No bridge")
             return
         }
+        
+        bridge.saveCall(call)
         
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileURL = documentsURL.appendingPathComponent(zipRelativePath)
