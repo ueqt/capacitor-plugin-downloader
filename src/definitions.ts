@@ -27,5 +27,5 @@ export type DownloadProgressCallback = (downloadProgressResult: DownloadProgress
 export interface DownloaderPlugin {
   download(options: DownloadOptions, callback: DownloadProgressCallback): Promise<CallbackID>;
   absolutePath(options: PathOptions): Promise<AbsolutePathResult>;
-  unzip(options: UnzipOptions, callback: DownloadProgressCallback): Promise<void>;
+  unzip(options: UnzipOptions, callback: DownloadProgressCallback): Promise<CallbackID>;
 }

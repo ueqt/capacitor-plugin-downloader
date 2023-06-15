@@ -48,7 +48,7 @@ public class DownloaderPlugin: CAPPlugin {
             .downloadProgress { progress in
                 if let savedCall = self.bridge?.savedCall(withID: callbackId) {
                     return savedCall.resolve([
-                        "progress": progress.fractionCompleted //* 0.8 // download 80%
+                        "progress": progress.fractionCompleted * 0.8 // download 80%
                     ])
                 }
             }
