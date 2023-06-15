@@ -40,8 +40,9 @@ export class Downloader extends WebPlugin implements DownloaderPlugin {
     };
   }
 
-  async unzip(options: UnzipOptions, callback: DownloadProgressCallback): Promise<void> {
+  async unzip(options: UnzipOptions, callback: DownloadProgressCallback): Promise<string> {
     console.log(options);
     console.log(callback);
+    return '';
   }
 }
