@@ -124,6 +124,9 @@ public class DownloaderPlugin: CAPPlugin {
         
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileURL = documentsURL.appendingPathComponent(zipRelativePath)
+        
+        let bridge = self.bridge
+        
         print(fileURL.pathExtension)
         if fileURL.pathExtension == "zip" {
             print("=========================================")
@@ -134,7 +137,7 @@ public class DownloaderPlugin: CAPPlugin {
                 print(zipInfo)
                 print(entryNumber)
                 print(total)
-                if let savedCall = self.bridge?.savedCall(withID: callbackId) {
+                if let savedCall = bridge?.savedCall(withID: callbackId) {
                     print("do progress")
                     return savedCall.resolve([
                         "progress": Double(entryNumber) / Double(total)
@@ -142,7 +145,7 @@ public class DownloaderPlugin: CAPPlugin {
                 }
             }))
         
-            if let savedCall = self.bridge?.savedCall(withID: callbackId) {
+            if let savedCall = bridge?.savedCall(withID: callbackId) {
                 print("do progress")
                 return savedCall.resolve([
                     "progress": 1
