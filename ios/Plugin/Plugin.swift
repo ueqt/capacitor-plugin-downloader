@@ -67,6 +67,11 @@ public class DownloaderPlugin: CAPPlugin {
                                 ])
                             }
                         })
+                        if let savedCall = self.bridge?.savedCall(withID: callbackId) {
+                            return savedCall.resolve([
+                                "progress": 1
+                            ])
+                        }
                         print("=========================================")
                         // delete file
                         do {
@@ -81,7 +86,7 @@ public class DownloaderPlugin: CAPPlugin {
                             ])
                         }
                     }
-                    call.resolve()
+//                    call.resolve()
                 } else {
                     call.reject(response.error?.errorDescription ?? "")
                 }
@@ -125,11 +130,18 @@ public class DownloaderPlugin: CAPPlugin {
                 print(entryNumber)
                 print(total)
                 if let savedCall = self.bridge?.savedCall(withID: callbackId) {
+                    print("do progress")
                     return savedCall.resolve([
                         "progress": Double(entryNumber) / Double(total)
                     ])
                 }
             })
+            if let savedCall = self.bridge?.savedCall(withID: callbackId) {
+                print("do progress")
+                return savedCall.resolve([
+                    "progress": 1
+                ])
+            }
             print("=========================================")
             // delete file
             do {
