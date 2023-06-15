@@ -129,6 +129,10 @@ public class DownloaderPlugin: CAPPlugin {
             return
         }
 
+        guard let savedCall = bridge.savedCall(withID: callbackId) else {
+            print("no savedcall")
+            return
+        }
         
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileURL = documentsURL.appendingPathComponent(zipRelativePath)
@@ -143,22 +147,12 @@ public class DownloaderPlugin: CAPPlugin {
                 print(zipInfo)
                 print(entryNumber)
                 print(total)
-                guard let savedCall = bridge.savedCall(withID: callbackId) else {
-                    print("no savedcall")
-                    return
-                }
                 print("do progress")
                 return savedCall.resolve([
                     "progress": Double(entryNumber) / Double(total)
                 ])
             }))
-        
-            if let savedCall = bridge.savedCall(withID: callbackId) {
-                print("do progress")
-                return savedCall.resolve([
-                    "progress": 1
-                ])
-            }
+
             print("=========================================")
             // delete file
             do {
@@ -166,14 +160,10 @@ public class DownloaderPlugin: CAPPlugin {
             } catch {
                 print("Could not delete file, probably read-only filesystem")
             }
-        } else {
-            if let savedCall = bridge.savedCall(withID: callbackId) {
-                return savedCall.resolve([
-                    "progress": 1
-                ])
-            }
         }
-        call.resolve()
+        return savedCall.resolve([
+            "progress": 1
+        ])
     }
     
     private func convertStringToDictionary(text: String) -> [String:String]? {
