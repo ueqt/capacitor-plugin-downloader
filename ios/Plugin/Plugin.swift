@@ -121,11 +121,17 @@ public class DownloaderPlugin: CAPPlugin {
             call.reject("No callbackId")
             return
         }
+        print("callbackId: ")
+        print(callbackId)
+        
+        guard let bridge = self.bridge else {
+            call.reject("No bridge")
+            return
+        }
+
         
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileURL = documentsURL.appendingPathComponent(zipRelativePath)
-        
-        let bridge = self.bridge
         
         print(fileURL.pathExtension)
         if fileURL.pathExtension == "zip" {
@@ -137,15 +143,17 @@ public class DownloaderPlugin: CAPPlugin {
                 print(zipInfo)
                 print(entryNumber)
                 print(total)
-                if let savedCall = bridge?.savedCall(withID: callbackId) {
-                    print("do progress")
-                    return savedCall.resolve([
-                        "progress": Double(entryNumber) / Double(total)
-                    ])
+                guard let savedCall = bridge.savedCall(withID: callbackId) else {
+                    print("no savedcall")
+                    return
                 }
+                print("do progress")
+                return savedCall.resolve([
+                    "progress": Double(entryNumber) / Double(total)
+                ])
             }))
         
-            if let savedCall = bridge?.savedCall(withID: callbackId) {
+            if let savedCall = bridge.savedCall(withID: callbackId) {
                 print("do progress")
                 return savedCall.resolve([
                     "progress": 1
@@ -159,7 +167,7 @@ public class DownloaderPlugin: CAPPlugin {
                 print("Could not delete file, probably read-only filesystem")
             }
         } else {
-            if let savedCall = self.bridge?.savedCall(withID: callbackId) {
+            if let savedCall = bridge.savedCall(withID: callbackId) {
                 return savedCall.resolve([
                     "progress": 1
                 ])
