@@ -60,13 +60,18 @@ public class DownloaderPlugin: CAPPlugin {
                         print("=========================================")
                         print(fileURL.relativePath)
                         print((fileURL.relativePath as NSString).deletingPathExtension)
-                        print(SSZipArchive.unzipFile(atPath: fileURL.relativePath, toDestination: (fileURL.relativePath as NSString).deletingPathExtension) { entry, zipInfo, entryNumber, total in
+                        print(SSZipArchive.unzipFile(atPath: fileURL.relativePath, toDestination: (fileURL.relativePath as NSString).deletingPathExtension, progressHandler: { entry, zipInfo, entryNumber, total in
+                            print(entry)
+                            print(zipInfo)
+                            print(entryNumber)
+                            print(total)
                             if let savedCall = self.bridge?.savedCall(withID: callbackId) {
+                                print("do progress")
                                 return savedCall.resolve([
                                     "progress": 0.8 + 0.2 * Double(entryNumber) / Double(total)
                                 ])
                             }
-                        })
+                        }))
                         if let savedCall = self.bridge?.savedCall(withID: callbackId) {
                             return savedCall.resolve([
                                 "progress": 1
@@ -86,7 +91,7 @@ public class DownloaderPlugin: CAPPlugin {
                             ])
                         }
                     }
-//                    call.resolve()
+                    call.resolve()
                 } else {
                     call.reject(response.error?.errorDescription ?? "")
                 }
@@ -124,7 +129,7 @@ public class DownloaderPlugin: CAPPlugin {
             print("=========================================")
             print(fileURL.relativePath)
             print((fileURL.relativePath as NSString).deletingPathExtension)
-            print(SSZipArchive.unzipFile(atPath: fileURL.relativePath, toDestination: (fileURL.relativePath as NSString).deletingPathExtension) { entry, zipInfo, entryNumber, total in
+            print(SSZipArchive.unzipFile(atPath: fileURL.relativePath, toDestination: (fileURL.relativePath as NSString).deletingPathExtension, progressHandler: { entry, zipInfo, entryNumber, total in
                 print(entry)
                 print(zipInfo)
                 print(entryNumber)
@@ -135,7 +140,8 @@ public class DownloaderPlugin: CAPPlugin {
                         "progress": Double(entryNumber) / Double(total)
                     ])
                 }
-            })
+            }))
+        
             if let savedCall = self.bridge?.savedCall(withID: callbackId) {
                 print("do progress")
                 return savedCall.resolve([
@@ -156,6 +162,7 @@ public class DownloaderPlugin: CAPPlugin {
                 ])
             }
         }
+        call.resolve()
     }
     
     private func convertStringToDictionary(text: String) -> [String:String]? {
